@@ -38,6 +38,27 @@ router.get("/messages", verifyToken, isAdmin, async (req, res) => {
   res.status(200).json({ success: true, data: messages });
 });
 
+router.get("/messages", verifyToken, isAdmin, async (req, res) => {
+    const [messages] = await db.query("SELECT * FROM inbox_admin");
+    res.status(200).json({ success: true, data: messages });
+  });
+
+router.get("/dashboard", verifyToken, isAdmin, async (req, res) => {
+  const [users] = await db.query("SELECT COUNT(*) AS total_users FROM user_login");
+  const [bills] = await db.query("SELECT COUNT(*) AS total_bills FROM bills");
+  const [paid] = await db.query("SELECT COUNT(*) AS bills_paid FROM bills_paid");
+
+  res.status(200).json({
+    success: true,
+    data: {
+      total_users: users[0].total_users,
+      total_bills: bills[0].total_bills,
+      bills_paid: paid[0].bills_paid,
+    },
+  });
+});
+
+
 // DELETE /api/admin/user/:id - Delete a user by id
 router.delete("/user/:id", verifyToken, isAdmin, async (req, res) => {
   const { id } = req.params;

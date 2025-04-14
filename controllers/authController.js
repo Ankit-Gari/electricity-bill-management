@@ -24,7 +24,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("Invalid username or password");
   }
 
-  const token = jwt.sign({ id: user.c_id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: user.c_id, username: user.name }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 
@@ -45,7 +45,7 @@ const adminLogin = asyncHandler(async (req, res) => {
     throw new Error("Invalid admin credentials");
   }
 
-  const token = jwt.sign({ id: adminRows[0].id, role: "admin" }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: adminRows[0].id, username: adminRows[0].name, role: "admin" }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
 
