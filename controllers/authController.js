@@ -31,7 +31,7 @@ const loginUser = asyncHandler(async (req, res) => {
   res.status(200).json({ token });
 });
 
-
+// ADMIN LOGIN
 const adminLogin = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
 

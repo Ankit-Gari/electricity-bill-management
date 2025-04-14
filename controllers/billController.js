@@ -34,3 +34,10 @@ exports.deleteBill = asyncHandler(async (req, res) => {
   await db.query("DELETE FROM bills WHERE bill_id = ?", [billId]);
   res.status(200).json({ success: true, message: "Bill deleted successfully" });
 });
+
+// Get all paid bills (admin)
+exports.getPaidBills = asyncHandler(async (req, res) => {
+  const [rows] = await db.query("SELECT * FROM bills_paid");
+  res.status(200).json({ success: true, data: rows });
+});
+

@@ -1,34 +1,37 @@
-// routes/billRoutes.js
-
 const express = require("express");
 const {
   getAllBills,
   getUserBills,
   addBill,
   deleteBill,
+  getPaidBills, // ✅ add this
 } = require("../controllers/billController");
 const verifyToken = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// GET /api/bills/ - Get all bills (public or admin-level access)
+// GET /api/bills - All bills
 router.get("/", getAllBills);
 
-// GET /api/bills/user - Get bills of logged-in user
+// ✅ New Route for Paid Bills
+router.get("/paid", verifyToken, getPaidBills);
+
+// GET /api/bills/user - User's own bills
 router.get("/user", verifyToken, getUserBills);
 
-// POST /api/bills/ - Add a bill (authenticated user)
+// POST /api/bills - Add a bill
 router.post("/", verifyToken, addBill);
 
+// POST /api/bills/pay - Mark bill as paid
 router.post("/pay", verifyToken, async (req, res) => {
   const { bill_id, amount, name } = req.body;
   const { id } = req.user;
 
   try {
-    // Insert into bills_paid table
-    await db.query("INSERT INTO bills_paid (c_id, name, bill_amt, bill_paid_date) VALUES (?, ?, ?, NOW())", [id, name, amount]);
-
-    // Delete from bills table (optional: simulate payment clearing)
+    await db.query(
+      "INSERT INTO bills_paid (c_id, name, bill_amt, bill_paid_date) VALUES (?, ?, ?, NOW())",
+      [id, name, amount]
+    );
     await db.query("DELETE FROM bills WHERE bill_id = ?", [bill_id]);
 
     res.status(200).json({ success: true, message: "Bill paid successfully" });
@@ -38,8 +41,7 @@ router.post("/pay", verifyToken, async (req, res) => {
   }
 });
 
-
-// DELETE /api/bills/:billId - Delete bill by ID (authenticated user)
+// DELETE /api/bills/:billId - Delete bill
 router.delete("/:billId", verifyToken, deleteBill);
 
 module.exports = router;
